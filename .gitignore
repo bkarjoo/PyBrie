@@ -1,3 +1,7 @@
+*.pyc
+.idea/*
+Trace.txt
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

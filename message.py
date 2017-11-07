@@ -1,6 +1,8 @@
 class message_server:
     is_server = 0
     es_server = 1
+
+
 class es_message_field:
     type = 2
     length = 3
@@ -39,7 +41,7 @@ class es_message_field:
     f_msg_index_1 = 5
     f_msg_index_2 = 6
     f_firm_id = 7
-    #TODO : not f_message field 8 - x are each T or ETB symbols
+    # TODO : not f_message field 8 - x are each T or ETB symbols
     # F S flag : Account Sell Mode
     f_s_attached_acct_count = 5
     f_s_account_id = 6
@@ -57,11 +59,11 @@ class es_message_field:
     f_m_max_dollar_amount = 8
     f_m_max_size = 9
     f_m_stop_loss = 10
-    f_m_override_stop_loss =  11
+    f_m_override_stop_loss = 11
     # G : Cancel Replace Order Request
     g_account = 4
-    g_reserve1 = 5 # reserved
-    g_reserve2 = 6 # reserved
+    g_reserve1 = 5  # reserved
+    g_reserve2 = 6  # reserved
     g_cr_message = 7
     g_symbol = 8
     g_side = 9
@@ -90,8 +92,8 @@ class es_message_field:
     # N : Order Request Message / cancel request
     n_account_id = 4
     n_parrent_no = 5
-    n_order_id =  6
-    n_operation =  7 # C for cancel
+    n_order_id = 6
+    n_operation = 7  # C for cancel
     n_symbol = 8
     n_side = 9
     n_qty = 10
@@ -144,13 +146,13 @@ class es_message_field:
     s_s_date_time = 6
     s_s_account_id = 7
     s_s_order_id = 8
-    s_s_order_sub_id = 9 #partials
+    s_s_order_sub_id = 9  # partials
     s_s_qty = 10
     s_s_order_price = 11
     s_s_contra = 12
     s_s_channel = 13
     s_s_status = 14
-    s_s_error_status = 15 # error message for status R (reject)
+    s_s_error_status = 15  # error message for status R (reject)
     s_s_symbol = 16
     s_s_side = 17
     s_s_order_type = 18
@@ -167,8 +169,8 @@ class es_message_field:
     # Z : Error Message
     z_error_text = 4
 
-class message(object):
 
+class message(object):
     def __init__(self, a_message):
         self.msg = a_message.decode('utf-8')
         self.tokens = self.msg.split(':')
@@ -189,13 +191,21 @@ class message(object):
     def get_tokens(self):
         return self.tokens
 
+    def get_field(self, field):
+        try:
+            return self.tokens[field]
+        except:
+            return None
+
 class is_message(message):
     def __init__(self, a_message):
         super(is_message, self).__init__(a_message)
         self.msg_server = message_server.is_server
 
+
 class es_message(message):
     def __init__(self, a_message):
         super(es_message, self).__init__(a_message)
         self.msg_server = message_server.es_server
+
 

@@ -276,62 +276,90 @@ def run():
             is_message_list.print_types()
 
         if command[:4] == 'sell':
-            """sell 100 XYZ 23.50 day"""
+            """sell 100 XYZ 23.50 day ALGOPAIR"""
+            """sell 100 XYZ 23.50 loo ALGOSYND"""
+            """sell 100 XYZ moo ALGOGROUP"""
+            """sell 100 XYZ vwap 23.5 stop ALGOSYND"""
+            """sell 100 XYZ vwap 23.5 * 0.99 stop ALGOGROUP"""
             values = command.split(' ')
-
+            qty = int(values[1])
+            # -qty means sell
+            qty = qty * -1
             o = order()
-            o.account = acct
-            o.parrent_id = '0'
-            o.order_id = '0'
-            o.operation = operation_type.new_order
-            o.symbol = values[2]
-            o.side = side_type.sell
-            o.quantity = values[1]
-            o.order_price = values[3]
-            o.channel_of_execution = 'CSFB'
-            if values[4] == 'day':
-                o.tif = tif_type.day
-            else:
-                o.tif = tif_type.day
-            o.type = order_type.limit
-            o.display = display_mode.lit
-            o.reserve_size = 300
-            o.ticket_id = '0'
-            o.algo_type = '3'
-            o.algo_start_time = '15-59-52'
-            o.algo_end_time = '16-00-00'
-            ES.SendESOrderMsg(sAcct=o.account, sSymb=o.symbol, sSd=o.side, sQty=o.quantity,
-                              sPr=o.order_price, sContra='', sChan=o.channel_of_execution,
-                              sTIF=o.tif, sOType=o.type, sDisp='Y')
+            acct = 'ALGOGROUP'
+            if values[3].upper() == 'MOO':
+                if len(values) == 5:
+                    acct = values[4]
+                o = generate_opg_market_order(qty, value[2], values[4])
+            elif values[4].upper() =='LOO':
+                if len(values) == 6:
+                    acct = values[5]
+                o = generate_limit_order(qty, value[2], value[3], values[5])
+            elif values[4].upper() == 'DAY':
+                if len(values) == 6:
+                    acct = values[5]
+                o = generate_limit_order(qty, values[2], values[3], values[5])
+            elif values[4].upper() == 'STOP':
+                if len(values) == 8:
+                    acct = values[7]
+                o = generate_stop_limit_order(qty, values[2], values[3], values[5], acct)
+            elif values[3].upper() == 'VWAP':
+                if values[5] == '*':
+                    price = float(values[4])
+                    multiplier = float(values[6])
+                    price = round(price * multiplier, 2)
+                    if len(values) == 9:
+                        acct = values[8]
+                    o = generate_nite_vwap_order(qty, values[2], '09-45-00', '13-00-00', price, acct)
+                else:
+                    if len(values) == 7:
+                        acct = values[6]
+                    o = generate_nite_vwap_order(qty, values[2], '09-45-00', '13-00-00', values[4], acct)
+
+            o.submit()
+
 
         if command[:3] == 'buy':
-            """buy 100 XYZ 23.50 day"""
+            """buy 100 XYZ 23.50 day (ALGOPAI)"""
+            """buy 100 XYZ 23.50 loo (ALGOSYND)"""
+            """buy 100 XYZ moo (ALGOGROUP)"""
+            """buy 100 XYZ 23.5 stop 23.75 limit (ALGOGROUP)"""
+            """buy 100 XYZ VWAP 23.5 stop (ALGOGROUP)"""
+            """buy 100 XYZ VWAP 23.5 * 1.01 stop (ALGOGROUP)"""
             values = command.split(' ')
-
             o = order()
-            o.account = acct
-            o.parrent_id = '0'
-            o.order_id = '0'
-            o.operation = operation_type.new_order
-            o.symbol = values[2]
-            o.side = side_type.buy
-            o.quantity = values[1]
-            o.order_price = values[3]
-            o.channel_of_execution = 'CSFB'
-            if values[4] == 'day':
-                o.tif = tif_type.day
-            else:
-                o.tif = tif_type.day
-            o.type = order_type.limit
-            o.display = display_mode.lit
-            o.reserve_size = 300
-            o.ticket_id = '0'
-            o.algo_type = '3'
-            o.algo_start_time = '15-59-52'
-            o.algo_end_time = '16-00-00'
-            ES.SendESOrderMsg(sAcct=o.account, sSymb=o.symbol, sSd=o.side, sQty=o.quantity,
-                              sPr=o.order_price, sContra='', sChan=o.channel_of_execution,
-                              sTIF=o.tif, sOType=o.type, sDisp='Y')
+            acct = 'ALGOGROUP'
+            if values[3].upper() == 'MOO':
+                if len(values) == 5:
+                    acct = values[4]
+                o = generate_opg_market_order(values[1],values[2],acct)
+            elif values[4].upper() == 'LOO':
+                if len(values) == 6:
+                    acct = values[5]
+                o = generate_limit_order(values[1],values[2],values[3],acct)
+            elif values[4].upper() == 'DAY':
+                if len(values) == 6:
+                    acct = values[5]
+                o = generate_limit_order(values[1],values[2],values[3],acct)
+            elif values[4].upper() == 'STOP':
+                if len(values) == 8:
+                    acct = values[7]
+                o = generate_stop_limit_order(values[1],values[2],values[3],values[5],acct)
+            elif values[3].upper() == 'VWAP':
+                if values[5] == '*':
+                    price = float(values[4])
+                    multiplier = float(values[6])
+                    price = round(price * multiplier,2)
+                    if len(values) == 9:
+                        acct = values[8]
+                    o = generate_nite_vwap_order(values[1], values[2], '09-45-00', '13-00-00', price, acct)
+                else:
+                    if len(values) == 7:
+                        acct = values[6]
+                    o = generate_nite_vwap_order(values[1], values[2], '09-45-00', '13-00-00', values[4], acct)
+
+            o.submit()
+
 
         if command[:7] == 'buy loo':
             # send loo order
