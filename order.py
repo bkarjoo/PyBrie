@@ -1,5 +1,7 @@
 import time
 import datetime
+from event import event
+from message import *
 # single object which sends orders and cancels orders
 # by submitting the proper message to the exchange
 
@@ -66,14 +68,20 @@ class order(object):
         self.is_submitted = False
         self.cancel_submitted = False
 
+        self.on_partial = event()
+        self.on_acknowledge = event()
+        self.on_completed = event()
+        self.on_canceled = event()
+
+    def on_partial_subscription(self, f):
+
     def __str__(self):
         return self.craft_message()
 
     def set_nite_vwap(self, start_time, end_time, stop_price):
         self.algo_fields = "4,{0},{1},,,{2},N,N,100,,,N,N,0".format(start_time,end_time,stop_price)
 
-    def submit(self):
-        global ES
+    def submit(self, ES):
         if not self.is_submitted:
             self.is_submitted = True
             ES.SendMessage(self.craft_message())
@@ -97,6 +105,9 @@ class order(object):
             self.account, self.parrent_id, self.order_id, self.symbol, self.side,
             self.quantity, self.order_price, self.contra, self.channel_of_execution,
             self.tif, self.type, self.display)
+
+    def update(self, msg):
+        pass
 
 def generate_order_id():
     """
@@ -152,7 +163,7 @@ def generate_opg_market_order(qty, symbol, acct):
     o.type = order_type.market
     o.parrent_id = generate_order_id()
     o.display = 'Y'
-    o.algo_fields = '4A,,,,,'
+    o.algo_fields = '9,,,,,'
     o.security_type = '8'
     o.security_id = symbol
     o.reserve_size = 100
@@ -173,7 +184,7 @@ def generate_opg_limit_order(qty, symbol, price, acct):
     o.type = order_type.limit
     o.parrent_id = generate_order_id()
     o.display = 'Y'
-    o.algo_fields = '4A,,,,,'
+    o.algo_fields = '9,,,,,'
     o.security_type = '8'
     o.security_id = symbol
     o.reserve_size = 100

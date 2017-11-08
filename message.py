@@ -208,4 +208,127 @@ class es_message(message):
         super(es_message, self).__init__(a_message)
         self.msg_server = message_server.es_server
 
+    def type(self):
+        return self.tokens[2]
+
+    def detail_type(self):
+        if self.type() == 'S':
+            return self.tokens[es_message_field.s_detail_type]
+        return ''
+
+    def date_time(self):
+        if self.type() == 'S':
+            if self.detail_type() == 'F':
+                return self.tokens[es_message_field.s_f_date_time]
+            if self.detail_type() == 'S':
+                return self.tokens[es_message_field.s_s_date_time]
+
+    def account(self):
+        if self.type() == 'S':
+            if self.detail_type() == 'F':
+                return  self.tokens[es_message_field.s_f_account_id]
+            if self.detail_type() == 'S':
+                return self.tokens[es_message_field.s_s_account_id]
+
+    def order_id(self):
+        if self.type() == 'S':
+            if self.detail_type() == 'F':
+                return  self.tokens[es_message_field.s_f_order_id]
+            if self.detail_type() == 'S':
+                return self.tokens[es_message_field.s_s_order_id]
+
+    def parrent_id(self):
+        if self.type() == 'S':
+            if self.detail_type() == 'F':
+                return  self.tokens[es_message_field.s_f_parrent_no]
+
+    def symbol(self):
+        if self.type() == 'S':
+            if self.detail_type() == 'F':
+                return  self.tokens[es_message_field.s_f_symbol]
+            if self.detail_type() == 'S':
+                return self.tokens[es_message_field.s_s_symbol]
+
+    def side(self):
+        if self.type() == 'S':
+            if self.detail_type() == 'F':
+                return  self.tokens[es_message_field.s_f_side]
+            if self.detail_type() == 'S':
+                return self.tokens[es_message_field.s_s_side]
+
+    def order_price(self):
+        if self.type() == 'S':
+            if self.detail_type() == 'F':
+                return self.tokens[es_message_field.s_f_order_price]
+            if self.detail_type() == 'S':
+                if self.status() != 'E':
+                    return self.tokens[es_message_field.s_s_order_price]
+
+    def execution_price(self):
+        if self.type() == 'S':
+            if self.detail_type() == 'S':
+                if self.status() == 'E':
+                    return self.tokens[es_message_field.s_s_order_price]
+
+    def qty(self):
+        if self.type() == 'S':
+            if self.detail_type() == 'F':
+                return  self.tokens[es_message_field.s_f_quantity]
+            if self.detail_type() == 'S':
+                return self.tokens[es_message_field.s_s_qty]
+
+    def status(self):
+        if self.type() == 'S':
+            if self.detail_type() == 'S':
+                return self.tokens[es_message_field.s_s_status]
+
+    def executed_qty(self):
+        if self.type() == 'S':
+            if self.detail_type() == 'S':
+                if self.status() == 'E':
+                    return self.tokens[es_message_field.s_s_qty]
+
+    def leaves_qty(self):
+        if self.type() == 'S':
+            if self.detail_type() == 'S':
+                if self.status() == 'E':
+                    return self.tokens[es_message_field.s_s_leaves_qty]
+
+    def execution_id(self):
+        if self.type() == 'S':
+            if self.detail_type() == 'S':
+                if self.status() == 'E':
+                    return self.tokens[es_message_field.s_s_order_sub_id]
+
+
+
+
+
+
+
+
+
+m = '#:05343:S:139:F:N:6:20171107 094251:ALGOGROUP:1209604:MU:S:1156:::NITE:DAY::M::Y: :::100:-1:4,09-45-00,13-00-00,,,43.14,N,N,100,,,N,N,0:S:'
+print(m)
+em = es_message(m)
+print(em)
+emt = em.get_tokens()
+print(em.type())
+print(em.detail_type())
+print(em.date_time())
+print(em.account())
+print(em.order_id())
+print(em.symbol())
+print(em.side())
+print(em.qty())
+print(em.status())
+print(em.executed_qty())
+print(em.leaves_qty())
+print(em.execution_id())
+print(em.order_price())
+print(em.execution_price())
+print(em.parrent_id())
+
+
+
 

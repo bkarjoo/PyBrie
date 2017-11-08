@@ -8,7 +8,7 @@ class message_handlers:
         pass
 
     def es_a_handler(self, msg):
-        print('a handler')
+        pass
     def es_b_handler(self, msg):
         pass
     def es_c_handler(self, msg):

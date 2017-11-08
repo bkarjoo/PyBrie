@@ -1,22 +1,28 @@
-from order import order
+from order import *
+from message import *
 
-class orders:
-    """
-    a collection of order objects
-    stores orders in a dictionary of orderId to order object
-    orderIds are auto generated hhmmss00x
-    this scheme alows for upto 1000 orders per second
-    """
-
+class orders(object):
     def __init__(self):
-        # key : parent_id
-        # value : order object
-        self.order_dict = {}
+        self.by_parrent = dict()
+        self.by_id = dict()
 
-    def add_order(self, order):
-        order_dict[id] = order
-        return id
+    def add_order(self, ord):
+        if type(ord) == order:
+            if (ord.parrent_id()) != '':
+                self.by_parrent[ord.parrent_id()] = ord
 
-
+    def update_order(self, msg):
+        if type(msg) == message:
+            id = msg.order_id()
+            pid = msg.parrent_id()
+            o = order()
+            if id != '':
+                if not id in self.by_id:
+                    if pid != '':
+                        o = self.by_parrent[pid]
+                        self.by_id[id] = o
+                else:
+                    o = self.by_id[id]
+            o.update(msg)
 
 

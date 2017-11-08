@@ -21,12 +21,14 @@ global session_setv
 global is_ready
 global quit
 
+global orders_by_id
+global orders_by_parrent
 
 def ESMsgHdlr(Msg):
     try:
         # now = datetime.datetime.now()
         # print(str(now))
-        # print(Msg)
+        #print(Msg)
         m = es_message(Msg)
         global is_ready
         if m.get_message_type() == 'U':
@@ -135,6 +137,10 @@ def run():
     global message_handler
     global quotes
     global acct
+    global orders_by_id
+    global orders_by_parrent
+    orders_by_id = dict()
+    orders_by_parrent = dict()
     quotes = Quotes()
     message_handler = message_handlers(quotes)
     """archive messages until you encounter the U message"""
@@ -294,7 +300,7 @@ def run():
             elif values[4].upper() =='LOO':
                 if len(values) == 6:
                     acct = values[5]
-                o = generate_limit_order(qty, value[2], value[3], values[5])
+                o = generate_opg_limit_order(qty, value[2], value[3], values[5])
             elif values[4].upper() == 'DAY':
                 if len(values) == 6:
                     acct = values[5]
@@ -316,7 +322,8 @@ def run():
                         acct = values[6]
                     o = generate_nite_vwap_order(qty, values[2], '09-45-00', '13-00-00', values[4], acct)
 
-            o.submit()
+            orders_by_parrent[o.parrent_id] = o
+            o.submit(ES)
 
 
         if command[:3] == 'buy':
@@ -337,6 +344,7 @@ def run():
                 if len(values) == 6:
                     acct = values[5]
                 o = generate_limit_order(values[1],values[2],values[3],acct)
+                o = generate_opg_limit_order(values[1],values[2],values[3],acct)
             elif values[4].upper() == 'DAY':
                 if len(values) == 6:
                     acct = values[5]
@@ -358,7 +366,8 @@ def run():
                         acct = values[6]
                     o = generate_nite_vwap_order(values[1], values[2], '09-45-00', '13-00-00', values[4], acct)
 
-            o.submit()
+            orders_by_parrent[o.parrent_id] = o
+            o.submit(ES)
 
 
         if command[:7] == 'buy loo':
